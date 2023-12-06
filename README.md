@@ -1,6 +1,8 @@
 # programmercarl_learn
 一个学习 代码随想录 的笔记  
-
+# 算法考察的两种模式  
+一种是像leetcode一样，给你写好了前置代码，导入好了相关的包，定义了相关数据结构，你只需要实现核心代码的 **核心模式**。  
+另一种是什么代码都没给，只给空白段落，全部代码让你实现，就如面试时，考官给你一张白纸，要你把所有代码实现出来的 **ACM模式**。  
 # 算法性能分析  
 
 ## 时间复杂度  
@@ -87,3 +89,95 @@ O(n^2)
 
 ## 二分查找  
 二分法的适用首先是有序的序列；其次还需要该序列没有重复元素，因为一旦有重复元素，使用二分查找法返回的元素下标可能不是唯一的  
+二分法很多人一看就会，一写就废，难点在于while循环是否写等号，以及重新选择左右边界时会陷入迷茫。就是定义域区间没定好的问题。  
+建议直接看讲解视频，看完就都懂了[二分查找 - 区间](https://www.bilibili.com/video/BV1fA4y1o715)  
+二分查找目前带来两种写法，第一种左闭右闭区间 ———— [left, right];第二种左闭右开区间 —————— [left, right), 以下做讲解  
+### 二分查找第一种写法  
+第一种写法，我们定义 target 是在一个在左闭右闭的区间里，也就是 **[left, right]** （这个很重要非常重要）。  
+
+区间的定义这就决定了二分法的代码应该如何写，因为定义target在[left, right]区间，所以有如下两点：  
+
+* while (left <= right) 要使用 <= ，因为left == right是有意义的，所以使用 <=  
+* if (nums[middle] > target) right 要赋值为 middle - 1，因为当前这个nums[middle]一定不是target，那么接下来要查找的左区间结束下标位置就是 middle - 1  
+
+代码如下：  
+```
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var search = function(nums, target) {
+    // right是数组最后一个数的下标，num[right]在查找范围内，是左闭右闭区间
+    let mid, left = 0, right = nums.length - 1;
+    // 当left=right时，由于nums[right]在查找范围内，所以要包括此情况
+    while (left <= right) {
+        // 位运算 + 防止大数溢出
+        mid = left + ((right - left) >> 1);
+        // 如果中间数大于目标值，要把中间数排除查找范围，所以右边界更新为mid-1；如果右边界更新为mid，那中间数还在下次查找范围内
+        if (nums[mid] > target) {
+            right = mid - 1;  // 去左面闭区间寻找
+        } else if (nums[mid] < target) {
+            left = mid + 1;   // 去右面闭区间寻找
+        } else {
+            return mid;
+        }
+    }
+    return -1;
+};
+```  
+* 时间复杂度：O(log n)  
+* 空间复杂度：O(1)  
+### 二分查找第二种写法  如果说定义 target 是在一个在左闭右开的区间里，也就是[left, right) ，那么二分法的边界处理方式则截然不同。  
+
+有如下两点：  
+
+* while (left < right)，这里使用 < ,因为left == right在区间[left, right)是没有意义的  
+* if (nums[middle] > target) right 更新为 middle，因为当前nums[middle]不等于target，去左区间继续寻找，而寻找区间是左闭右开区间，所以right更新为middle，即：下一个查询区间不会去比较nums[middle]  
+
+代码如下：  
+```
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var search = function(nums, target) {
+    // right是数组最后一个数的下标+1，nums[right]不在查找范围内，是左闭右开区间
+    let mid, left = 0, right = nums.length;    
+    // 当left=right时，由于nums[right]不在查找范围，所以不必包括此情况
+    while (left < right) {
+        // 位运算 + 防止大数溢出
+        mid = left + ((right - left) >> 1);
+        // 如果中间值大于目标值，中间值不应在下次查找的范围内，但中间值的前一个值应在；
+        // 由于right本来就不在查找范围内，所以将右边界更新为中间值，如果更新右边界为mid-1则将中间值的前一个值也踢出了下次寻找范围
+        if (nums[mid] > target) {
+            right = mid;  // 去左区间寻找
+        } else if (nums[mid] < target) {
+            left = mid + 1;   // 去右区间寻找
+        } else {
+            return mid;
+        }
+    }
+    return -1;
+};
+```  
+* 时间复杂度：O(log n)  
+* 空间复杂度：O(1)  
+
+### 问题拓展 —————— 为什么二分查找的时间复杂度是O(log(n))?  
+当采用二分查找算法进行查询时，最优的情况是第一次就找到，最坏的情况是n/2，由于每次都是对半查询，所以中间过程就是n/2,n/4,n/8 ... 1.  
+
+每一次的循环就是对半查找，我们要对半查找多少次，最后才能从n个里面剩下一个  
+
+
+![二分查找时间复杂度计算](https://img2020.cnblogs.com/blog/1985544/202111/1985544-20211120134745605-1572056335.png)  
+
+中间计算过程  
+![二分查找时间复杂度计算](https://img2018.cnblogs.com/blog/1150097/201907/1150097-20190730212140322-1590260864.png)  
+
+![二分查找时间复杂度计算](https://img2018.cnblogs.com/blog/1150097/201907/1150097-20190730212305255-1604279115.png)  
+
+![二分查找时间复杂度计算](https://img2018.cnblogs.com/blog/1150097/201907/1150097-20190730212526774-51748586.png)  
+
+![二分查找时间复杂度计算](https://img2018.cnblogs.com/blog/1150097/201907/1150097-20190730212657521-1875193024.png)  
