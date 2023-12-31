@@ -25,3 +25,27 @@ var sortedSquares = function (nums) {
   const result = nums.maps((item) => item * item).sort(a - b);
   return result;
 };
+
+// 时间复杂度为O(n)的写法
+
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var sortedSquares = function (nums) {
+  let k = nums.length - 1,
+    i = 0,
+    j = nums.length - 1;
+  const arr = new Array(nums.length).fill(0);
+  while (i <= j) {
+    if (nums[i] * nums[i] < nums[j] * nums[j]) {
+      arr[k] = nums[j] * nums[j];
+      j--;
+    } else {
+      arr[k] = nums[i] * nums[i];
+      i++;
+    }
+    k--;
+  }
+  return arr;
+};
