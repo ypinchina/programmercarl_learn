@@ -34,36 +34,19 @@ var getIntersectionNode = function (headA, headB) {
       pA = pA.next;
       count--;
     }
-    while (pB) {
-      if (pA === pB) {
-        return pA;
-      }
-      pA = pA.next;
-      pB = pB.next;
-    }
-    return null;
   } else if (lenB > lenA) {
     let count = lenB - lenA;
     while (count > 0) {
       pB = pB.next;
       count--;
     }
-    while (pA) {
-      if (pA === pB) {
-        return pB;
-      }
-      pA = pA.next;
-      pB = pB.next;
-    }
-    return null;
-  } else {
-    while (pB) {
-      if (pA === pB) {
-        return pA;
-      }
-      pA = pA.next;
-      pB = pB.next;
-    }
-    return null;
   }
+  while (pB) {
+    if (pA === pB) {
+      return pA;
+    }
+    pA = pA.next;
+    pB = pB.next;
+  }
+  return null;
 };
